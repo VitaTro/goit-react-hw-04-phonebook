@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
 import { nanoid } from 'nanoid';
-import { useFormValue } from "./hooks/useFormValue";
+import { useEffect, useRef, useState } from 'react';
+import ContactAdd from './ContactAdd/ContactAdd';
+import ContactList from './ContactList/ContactList';
+import Filter from './Filter/Filter';
 
 // class App extends Component {
 //   constructor(props) {
@@ -15,120 +17,129 @@ import { useFormValue } from "./hooks/useFormValue";
 //     filter: "",
 //   }
 //   }
+
 const App = () => {
   // useState - це хук, який дозволяє нам відстежувати стан в функціональних компонентах.
-  // Стан відноситься до даних або властивостей, які потрібно відслідковувати в додатку
-const [contacts, setContacts] = useState([
-  { id: nanoid(), name: "Rosie Simpson", number: "459-12-56" },
-    { id: nanoid(), name: "Hermione Kline", number: "443-89-12" },
-    { id: nanoid(), name: "Eden Clements", number: "645-17-79" },
-    { id: nanoid(), name: "Annie Copeland", number: "227-91-26" },
-]);
-// useEffect - це хук, який дозволяє мені відстежувати стан в функціональних компонентах.
-// Він дозволяє виконувати певні дії після render(),
-// а також при оновленні стану або властивостей
+  // // Стан відноситься до даних або властивостей, які потрібно відслідковувати в додатку
+  const [contacts, setContacts] = useState([
+    { id: nanoid(), name: 'Rosie Simpson', number: '459-12-56' },
+    { id: nanoid(), name: 'Hermione Kline', number: '443-89-12' },
+    { id: nanoid(), name: 'Eden Clements', number: '645-17-79' },
+    { id: nanoid(), name: 'Annie Copeland', number: '227-91-26' },
+  ]);
+  const [filter, setFilter] = useState('');
+  const isMounted = useRef(false);
+  const Key = 'Contacts';
 
- // як тільки "ладується" сторінка, то запускається оцей життєвий цикл.
-// він дозволяє отримувати доступ до будь-яких посилань мого ДОМу
-// componentDidMount() {
-//   const storedContacts = localStorage.getItem('contacts') 
-//   if (storedContacts) {
-//     this.setState({ contacts: JSON.parse(storedContacts) });
-//   }
-// }
-// componentDidUpdate(prevProps, prevState) {
-//   if (this.state.contacts !== prevState.contacts) {
-//     localStorage.setItem("contacts",JSON.stringify(this.state.contacts));
-//   }
-// }
+  // useEffect - це хук, який дозволяє мені відстежувати стан в функціональних компонентах.
+  // Він дозволяє виконувати певні дії після render(),
+  // а також при оновленні стану або властивостей
 
-
-useEffect(() => {
-  const storedContacts = localStorage.getItem('contacts');
-  if (storedContacts) {
-    setContacts( JSON.parse(storedContacts) );
-  }
-}, []);
-
-  const name = useFormValue('');
-  const phone = useFormValue('');
-
-  // const checkContact = (newContact) => {
-  //   const { contacts } = this.state;
-  //   const isInBase = contacts.some(
-  //     (contact) => contact.name.toLowerCase() === newContact.name.toLowerCase
-  //   );
-  //   return isInBase;
-  //  };
-
-// const checkContact = (newContact) => {
-//   return contacts.some (
-//     (contact) => contact.name.toLowerCase() === newContact.name.toLowerCase
-//   );
-// };
-//   const addNewContact = (newContact) => {
-// const check = this.checkContact(newContact) 
-//   if(!check) {
-//     const { contacts } = this.state;
-//     contacts.push(newContact);
-//     this.seyState({ contacts });
-//     localStorage.setItem('contacts', JSON.stringify(contacts));
-//   } else {
-//     alert (`${newContact.name} is already in contacts!`);
-//      }
-//   };
-
-const addNewContact = (newContact) => {
-  // if(!checkContact(newContact)) {
-    setContacts([...contacts, newContact]);
-    localStorage.setItem('contacts', JSON.stringify([...contacts, newContact]));
-  // } else {
-    // alert (`${newContact.name} is already in contacts!`);
+  // як тільки "ладується" сторінка, то запускається оцей життєвий цикл.
+  // він дозволяє отримувати доступ до будь-яких посилань мого ДОМу
+  // componentDidMount() {
+  //   const storedContacts = localStorage.getItem('contacts')
+  //   if (storedContacts) {
+  //     this.setState({ contacts: JSON.parse(storedContacts) });
+  //   }
   // }
-};
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (this.state.contacts !== prevState.contacts) {
+  //     localStorage.setItem("contacts",JSON.stringify(this.state.contacts));
+  //   }
+  // }
+  useEffect(() => {
+    const storedContacts = JSON.parse(localStorage.getItem('Key'));
+    storedContacts && setContacts([...storedContacts]);
+  }, []);
 
-  const deleteUser = (id) => {
-    // const { contacts } = this.state;
-    const filteredContacts = contacts.filter((contact) => contact.id !== id);
-  // this.setState({ contacts: filtered });
-  setContacts(filteredContacts);
-  localStorage.setItem('contacts', JSON.stringify(filteredContacts));
+  useEffect(() => {
+    if (isMounted.current) {
+      localStorage.setItem(Key, JSON.stringify(contacts));
+    } else {
+      isMounted.current = true;
+    }
+  }, [contacts]);
+
+  // // перевірка контакту, чи вона є в базі даних чи ні
+  //   checkContact = (newContact) => {
+  //     const { contacts } = this.state;
+  //     const isInBase = contacts.some(
+  //       (contact) => contact.name.toLowerCase() === newContact.name.toLowerCase()
+  //     );
+  //     return isInBase;
+  //   };
+
+  const checkContact = newContact => {
+    const isInBase = contacts.some(
+      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+    );
+    return isInBase;
   };
-return (
-<>
-<div>
-      <form >
-        <div >
-        <label htmlFor="user-name" >Name</label>
-            <div>
-            <input
-           
-        type="text"
-        {...name}
-        pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-        title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
-        required
-      />    
-            </div>
-        </div>
+  //   // якщо контакта немає з таким іменем, то йде додавання, якщо є то повідомлення
+  // addNewContact = (newContact) => {
+  //   const check = this.checkContact(newContact);
+  //   if (!check) {
+  //     const { contacts } = this.state;
+  //     contacts.push(newContact);
+  // this.setState({ contacts: contacts});
+  // // при додаванні контакту всі дані відображаються в локал сторедж
+  // localStorage.setItem('contacts', JSON.stringify(contacts));
+  //   } else {
+  //     // <Alert className={css.error} message={`${newContact.name} is already in contacts`} />
+  //     alert  (`${newContact.name} is already in contacts`);
+  //   }
+  // };
 
+  const addNewContact = newContact => {
+    const check = checkContact(newContact);
+    if (!check) {
+      let actualContacts = contacts;
+      actualContacts.push(newContact);
+      setContacts([...actualContacts]);
+    } else {
+      alert(`${newContact.name} is already in contacts`);
+    }
+
+    // // фільтрування контактів
+    // changeFilterValue = (evt) => {
+    //   this.setState({ filter: evt.target.value });
+    // };
+
+    const changeFilterValue = e => {
+      setFilter(e.target.value);
+    };
+    // // видалення контактів
+    // deleteUser = (evt) => {
+    //   const { contacts } = this.state;
+    //   const filtered = contacts.filter((contact) => contact.id !== evt.target.id);
+    //   this.setState({ contacts: filtered });
+    //   // при видаленні контакту всі дані видаляються з локал сторедж
+    //   localStorage.setItem('contacts', JSON.stringify(filtered));
+    // };
+
+    const deleteUser = e => {
+      const filteredContacts = contacts.filter(
+        contact => contact.id !== e.target.id
+      );
+      setContacts(filteredContacts);
+    };
+
+    return (
       <div>
-      <label  htmlFor="number" >Number</label>
-         <div>
-         <input
-        
-        type="tel"
-       {...phone}
-        pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-        title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
-        required
-      />
-     </div>
+        <h1>Phonebook</h1>
+        <ContactAdd onSubmit={addNewContact} />
+
+        <h2>Contacts</h2>
+        <Filter changeHandler={changeFilterValue} />
+        <ContactList
+          filter={filter}
+          contacts={contacts}
+          deleteFunction={deleteUser}
+        />
       </div>
-     <button  type="submit" >Add contact</button>
-      </form>
-      </div>
-</>
-);
+    );
+  };
 };
+
 export default App;
