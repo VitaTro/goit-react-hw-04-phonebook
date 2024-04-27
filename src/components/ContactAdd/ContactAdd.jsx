@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import PropTypes from 'prop-types';
-// import css from "./ContactAdd.module.css";
+import css from './ContactAdd.module.css';
 
 // const INITIAL_USER = {
 //   name: "",
@@ -63,12 +63,15 @@ const ContactAdd = props => {
   //   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="user-name">Name</label>
+    <div className={css.primary}>
+      <form onSubmit={handleSubmit} className={css.form}>
+        <div className={css.container}>
+          <label htmlFor="user-name" className={css.label}>
+            Name
+          </label>
           <div>
             <input
+              className={css.input}
               type="text"
               name="name"
               pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
@@ -78,10 +81,13 @@ const ContactAdd = props => {
           </div>
         </div>
 
-        <div>
-          <label htmlFor="number">Number</label>
+        <div className={css.container}>
+          <label htmlFor="number" className={css.label}>
+            Number
+          </label>
           <div>
             <input
+              className={css.input}
               type="tel"
               name="number"
               pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
@@ -90,7 +96,9 @@ const ContactAdd = props => {
             />
           </div>
         </div>
-        <button type="submit">Add contact</button>
+        <button type="submit" className={css.button}>
+          Add contact
+        </button>
       </form>
     </div>
   );
